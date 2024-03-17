@@ -1,0 +1,5 @@
+export const en = {
+  "ABOUT": "Hey, friend! \uD83D\uDD90\n\n\n\nWe are the Leaders of the Present! We are the team elected by over 3000 votes at the Sochi Youth Festival in March 2024! \uFE0F\u200D\uD83D\uDD25\n\n\n\nOur mission is to create an inspiring and safe space for young people from around the world to learn, grow and influence the global future through culture, education and innovation. Here and Now!\n\n\n\nThe key idea of our team is the unity of peoples and love for the world through the development of ecology, agrarian sphere, medicine, culture. We strive for patriotism, development, equality and inclusiveness.\n\n\n\n\n\nIf you are ready to develop today, connect our reminder and get acquainted with informative posts in our channel.",
+  "JOIN": "Congratulations!  \n\nNow you are one step closer to a conscious time allocation!  \n\nWe will remind you of this \uD83D\uDC95",
+  "START_BOT": "Congratulations!  \n\nNow you are one step closer to a conscious time allocation!  \n\nWe will remind you of this \uD83D\uDC95",
+}

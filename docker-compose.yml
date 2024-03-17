@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    container_name: nab_app
+    #restart: always
+    ports:
+      - "3001:3000"
+    build:
+      context: ./containers/app
+    volumes:
+      - './app:/app'
+
+  postgis:
+    container_name: nab_postgis
+    #      restart: always
+    image: postgis/postgis:14-3.3
+    ports:
+      - "5432:5432"
+    volumes:
+      - ktt_postgresvolume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nab
+      - POSTGRES_USER=nab_user
+      - POSTGRES_PASSWORD=16b0c454b28cf58d3d160fec2836ec14
+
+volumes:
+  ktt_postgresvolume:
