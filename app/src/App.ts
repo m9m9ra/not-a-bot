@@ -7,6 +7,7 @@ import * as cors from "cors";
 import {AppDataSource} from "./config/data-source";
 import {TelegramBot} from "./utils/TelegramBot";
 import * as path from "path";
+import {csvjson} from "../dump/csvjson";
 
 AppDataSource.initialize().then(async () => {
 
@@ -21,9 +22,21 @@ AppDataSource.initialize().then(async () => {
     app.use(cors());
 
     const TGBOT = new TelegramBot();
+    const userRepoInit = AppDataSource.getRepository(User);
 
     // todo - Routers
     app.use('/', Router);
+
+    // csvjson.forEach((item) => {
+    //     const saveOldUser = Object.assign(new User(), {
+    //         chat_id: item.id,
+    //         introduce: item.name,
+    //         phone: item.phone,
+    //         email: item.email
+    //     });
+    //
+    //     userRepoInit.save(saveOldUser);
+    // })
 
     // setup express app here
     // ...

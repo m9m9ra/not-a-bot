@@ -4,9 +4,11 @@ import {en} from "./locales/en";
 import * as fs from "fs";
 import {AppDataSource} from "../config/data-source";
 import {User} from "../entity/User";
+import {userInfo} from "os";
 
 export class TelegramBot {
-    private token: string = `5621982837:AAGjwXOyv6_S26JSGfDP-1OhxatnFmJvK-A`;
+    // private token: string = `5621982837:AAGjwXOyv6_S26JSGfDP-1OhxatnFmJvK-A`; // todo - m9m9ra-token
+    private token: string = `6907862407:AAEZS9m8bZP4BFL_Le1-2jc4_MJKsUIV7l0`; // todo - Uki-token
     private question: boolean = false;
     private en: boolean = true;
     private bot: TelegramBotApi = new TelegramBotApi(this.token, {polling: true});
@@ -18,6 +20,7 @@ export class TelegramBot {
         start_ru: TelegramBotApi.SendMessageOptions,
         menu_en: TelegramBotApi.SendMessageOptions,
         menu_ru: TelegramBotApi.SendMessageOptions,
+        admin_any: TelegramBotApi.SendMessageOptions,
     } = {
         start: {
             reply_markup: {
@@ -58,6 +61,14 @@ export class TelegramBot {
                     [{text: `Есть идея ✋`, callback_data: '/idea_ru'}]
                 ]
             }
+        },
+        admin_any: {
+            reply_markup: {
+                inline_keyboard: [
+                    [{text: `Начать рассылку 🔥`, callback_data: '/admin_spam'}],
+                    [{text: `Просмотреть ВСЕХ пользователей 🔥`, callback_data: '/admin_user'}]
+                ]
+            }
         }
     };
 
@@ -86,13 +97,7 @@ export class TelegramBot {
                     break;
 
                 case "/16b0c454b28cf58d3d160fec2836ec14":
-                    this.userRepository.find({}).then((res) => {
-                        res.forEach(item => {
-                            const plainText = `Name: ${item.introduce}\nSupport: ${item.support}\nPhone: ${item.phone}\nEmail: ${item.email}\nOther: ${item.other}`
-
-                            this.bot.sendMessage(chatId, plainText);
-                        })
-                    })
+                    this.bot.sendMessage(chatId, "Admin Keyboard", this.buttonArray.admin_any);
                     break;
 
                 default:
@@ -174,6 +179,7 @@ export class TelegramBot {
                                                         answerCallbacks[msg.message.chat.id] = function (answer) {
                                                             var other = answer.text;
                                                             const newUser = Object.assign(new User(), {
+                                                                chat_id: Number(chatId),
                                                                 introduce: introduce,
                                                                 support: support,
                                                                 phone: phone,
@@ -186,9 +192,18 @@ export class TelegramBot {
                                                                 bot.sendMessage(chatId, "Great! Let`s start!", {
                                                                     reply_markup: {
                                                                         inline_keyboard: [
-                                                                            [{text: `About us 📢`, callback_data: '/about_en'}],
-                                                                            [{text: `Start bot 🔥`, callback_data: '/join_bot_en'}],
-                                                                            [{text: `I have an idea ✋`, callback_data: '/idea_en'}]
+                                                                            [{
+                                                                                text: `About us 📢`,
+                                                                                callback_data: '/about_en'
+                                                                            }],
+                                                                            [{
+                                                                                text: `Start bot 🔥`,
+                                                                                callback_data: '/join_bot_en'
+                                                                            }],
+                                                                            [{
+                                                                                text: `I have an idea ✋`,
+                                                                                callback_data: '/idea_en'
+                                                                            }]
                                                                         ]
                                                                     }
                                                                 });
@@ -207,7 +222,6 @@ export class TelegramBot {
                     });
 
                     break;
-
 
                 case "/idea_ru":
                     this.question = true;
@@ -232,13 +246,14 @@ export class TelegramBot {
                                                     bot.sendMessage(msg.message.chat.id, "Укажите идею для сотрудничества (либо иную информацию)").then(() => {
                                                         answerCallbacks[msg.message.chat.id] = function (answer) {
                                                             var other = answer.text;
-
+                                                            console.log(chatId);
                                                             const newUser = Object.assign(new User(), {
-                                                               introduce: introduce,
-                                                               support: support,
-                                                               phone: phone,
-                                                               email: email,
-                                                               other: other
+                                                                chat_id: Number(chatId),
+                                                                introduce: introduce,
+                                                                support: support,
+                                                                phone: phone,
+                                                                email: email,
+                                                                other: other
                                                             });
 
                                                             AppDataSource.getRepository(User).save(newUser).then(() => {
@@ -246,9 +261,18 @@ export class TelegramBot {
                                                                 bot.sendMessage(chatId, "Отлично, c чего начнем?", {
                                                                     reply_markup: {
                                                                         inline_keyboard: [
-                                                                            [{text: `О нас 📢`, callback_data: '/about_ru'}],
-                                                                            [{text: `Запустить бота 🔥`, callback_data: '/join_bot_ru'}],
-                                                                            [{text: `Есть идея ✋`, callback_data: '/idea_ru'}]
+                                                                            [{
+                                                                                text: `О нас 📢`,
+                                                                                callback_data: '/about_ru'
+                                                                            }],
+                                                                            [{
+                                                                                text: `Запустить бота 🔥`,
+                                                                                callback_data: '/join_bot_ru'
+                                                                            }],
+                                                                            [{
+                                                                                text: `Есть идея ✋`,
+                                                                                callback_data: '/idea_ru'
+                                                                            }]
                                                                         ]
                                                                     }
                                                                 });
@@ -285,6 +309,42 @@ export class TelegramBot {
                         has_spoiler: true,
                         caption: `Видео визитка`
                     }, fileOptions);
+
+                    break;
+
+                case "/admin_spam":
+                    this.question = true;
+                    this.en = true;
+                    bot.sendMessage(msg.message.chat.id, "Введите текст для рассылки\nБудьте осторожны с этой функцией!").then(() => {
+                        answerCallbacks[msg.message.chat.id] = function (answer) {
+                            var spam_message = answer.text;
+
+                            AppDataSource.getRepository(User).find({})
+                                .then((userInfo) => {
+                                    userInfo.forEach((item: User) => {
+                                        bot.sendMessage(item.chat_id, spam_message);
+                                    })
+                                }).then(() => {
+                                    bot.sendMessage(msg.message.chat.id, "Фууух, я разослал все твои письма и очень устал");
+                            })
+                        }
+                    });
+
+                    break;
+                case "/admin_user":
+                    this.question = true;
+                    this.en = true;
+                    AppDataSource.getRepository(User).find({})
+                        .then((userInfo) => {
+                            userInfo.forEach((item: User) => {
+                                setTimeout(() => {
+                                    const plainText = `Name: ${item.introduce}\nSupport: ${item.support}\nPhone: ${item.phone}\nEmail: ${item.email}\nOther: ${item.other}`
+                                    this.bot.sendMessage(chatId, plainText);
+                                }, 400)
+                            })
+                        }).then(() => {
+
+                    })
 
                     break;
 

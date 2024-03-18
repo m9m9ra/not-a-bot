@@ -6,19 +6,25 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    introduce?: string
+    @Column({nullable: true, type: "bigint"})
+    chat_id?: number
 
-    @Column()
-    support?: string
+    @Column({nullable: true})
+    name?: string
 
-    @Column()
+    @Column({nullable: true})
     phone?: string
 
-    @Column()
+    @Column({nullable: true})
     email?: string
 
-    @Column()
+    @Column({nullable: true})
+    introduce?: string
+
+    @Column({nullable: true})
+    support?: string
+
+    @Column({nullable: true})
     other?: string
 
 }
